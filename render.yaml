@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: patient-management-app
+    name: patient-db-app
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
