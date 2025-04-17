@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+  <title>Add Patient</title>
+</head>
+<body>
+  <h2>Add New Patient</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.name.label }} {{ form.name() }}<br>
+    {{ form.age.label }} {{ form.age() }}<br>
+    {{ form.code_number.label }} {{ form.code_number() }}<br>
+    {{ form.image.label }} {{ form.image() }}<br>
+    {{ form.submit() }}
+  </form>
+  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>
