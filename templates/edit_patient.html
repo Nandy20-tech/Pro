@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <title>Edit Patient</title>
+</head>
+<body>
+  <h2>Edit Patient: {{ patient.name }}</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.name.label }} {{ form.name() }}<br>
+    {{ form.age.label }} {{ form.age() }}<br>
+    {{ form.code_number.label }} {{ form.code_number() }}<br>
+    {{ form.image.label }} {{ form.image() }}<br>
+    {{ form.submit() }}
+  </form>
+  {% if patient.image_filename %}
+    <p>Current Image:</p>
+    <img src="{{ url_for('static', filename='uploads/' + patient.image_filename) }}" width="100">
+  {% endif %}
+  <br><a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>
