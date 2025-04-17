@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h2>Welcome, {{ current_user.username }}</h2>
+  <a href="{{ url_for('logout') }}">Logout</a> |
+  <a href="{{ url_for('add_patient') }}">Add New Patient</a>
+
+  <h3>Patient Records</h3>
+  <ul>
+    {% for patient in patients %}
+      <li>
+        <strong>{{ patient.name }}</strong> ({{ patient.age }} yrs) - Code: {{ patient.code_number }}
+        {% if patient.image_filename %}
+          <br><img src="{{ url_for('static', filename='uploads/' + patient.image_filename) }}" width="100">
+        {% endif %}
+        <br><a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a>
+      </li><br>
+    {% endfor %}
+  </ul>
+</body>
+</html>
