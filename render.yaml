@@ -1,7 +1,6 @@
 services:
   - type: web
-    name: flask-app
+    name: patient-management-app
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
-    plan: free
