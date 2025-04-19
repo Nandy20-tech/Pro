@@ -67,21 +67,14 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM users WHERE username=?", (username,))
-        user = c.fetchone()
-        conn.close()
-
-        if user and check_password_hash(user[2], password):  # Adjust index as needed
-            session['username'] = username
-            return redirect('/dashboard')
-        else:
-            return 'Invalid credentials'
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        flash("Invalid username or password", "danger")
+    return render_template('login.html', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
