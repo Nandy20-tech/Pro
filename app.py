@@ -1,136 +1,100 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, session
+import sqlite3
 import os
-import csv
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'Nandhu@20'
-
-# File Paths
-PATIENTS_FILE = 'patients.csv'
 UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# Ensure upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure CSV file exists
-if not os.path.exists(PATIENTS_FILE):
-    with open(PATIENTS_FILE, 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Patient ID", "Name", "Age", "Phone", "Image"])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Dummy user for login
-users = {'Nandhitha': 'Nandhu20'}
+# Database helper function
+def get_db_connection():
+    conn = sqlite3.connect('data/patients.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Authentication function
+def check_user(username, password):
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+    conn.close()
+    return user and user['password'] == password
 
 @app.route('/')
 def index():
+    if 'username' in session:
+        return redirect(url_for('patient_dashboard'))
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
-    if username in users and users[username] == password:
+    if check_user(username, password):
         session['username'] = username
-        flash('Login successful!', 'success')
-        return redirect(url_for('dashboard'))
-    else:
-        flash('Invalid credentials!', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('patient_dashboard'))
+    return "Invalid credentials", 401
 
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    flash('Logged out successfully.', 'info')
-    return redirect(url_for('index'))
-
-@app.route('/dashboard')
-def dashboard():
+@app.route('/patient_dashboard')
+def patient_dashboard():
     if 'username' not in session:
-        flash('Please login first.', 'warning')
         return redirect(url_for('index'))
-    return render_template('dashboard.html', username=session['username'])
+    
+    conn = get_db_connection()
+    patients = conn.execute('SELECT * FROM patients').fetchall()
+    conn.close()
+    return render_template('patient_details.html', patients=patients)
 
-@app.route('/add_patient')
+@app.route('/add_patient', methods=['GET', 'POST'])
 def add_patient():
     if 'username' not in session:
         return redirect(url_for('index'))
-    return render_template('add_patient.html')
-
-@app.route('/submit_patient', methods=['POST'])
-def submit_patient():
-    if 'username' not in session:
-        return redirect(url_for('index'))
-
-    name = request.form['name']
-    patient_id = request.form['patient_id']
-    age = request.form['age']
-    phone = request.form['phone']
-    image = request.files['image']
-
-    image_filename = None
-    if image and image.filename:
-        image_filename = os.path.join(UPLOAD_FOLDER, f"{patient_id}_{image.filename}")
-        image.save(image_filename)
-
-    with open(PATIENTS_FILE, 'a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([patient_id, name, age, phone, image_filename])
-
-    flash("Patient details submitted successfully!", "success")
-    return redirect(url_for('dashboard'))
-
-@app.route('/patients')
-def view_patients():
-    if 'username' not in session:
-        return redirect(url_for('index'))
-
-    patients = []
-    with open(PATIENTS_FILE, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for row in reader:
-            patients.append(row)
-    return render_template('patients.html', patients=patients)
-
-@app.route('/edit_patient/<patient_id>', methods=['GET', 'POST'])
-def edit_patient(patient_id):
-    if 'username' not in session:
-        return redirect(url_for('index'))
-
-    patients = []
-    with open(PATIENTS_FILE, 'r') as file:
-        reader = csv.reader(file)
-        headers = next(reader)
-        for row in reader:
-            patients.append(row)
-
-    patient = next((p for p in patients if p[0] == patient_id), None)
-
-    if not patient:
-        flash("Patient not found!", "danger")
-        return redirect(url_for('view_patients'))
 
     if request.method == 'POST':
-        updated_name = request.form['name']
-        updated_age = request.form['age']
-        updated_phone = request.form['phone']
+        name = request.form['name']
+        age = request.form['age']
+        phone = request.form['phone']
+        file = request.files['image']
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        for p in patients:
-            if p[0] == patient_id:
-                p[1] = updated_name
-                p[2] = updated_age
-                p[3] = updated_phone
-                break
+            conn = get_db_connection()
+            conn.execute('INSERT INTO patients (name, age, phone, image_path) VALUES (?, ?, ?, ?)',
+                         (name, age, phone, image_path))
+            conn.commit()
+            conn.close()
 
-        with open(PATIENTS_FILE, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(headers)
-            writer.writerows(patients)
+            return redirect(url_for('patient_dashboard'))
+    return render_template('index.html')
 
-        flash("Patient details updated successfully!", "success")
-        return redirect(url_for('view_patients'))
+@app.route('/edit_patient/<int:id>', methods=['GET', 'POST'])
+def edit_patient(id):
+    if 'username' not in session:
+        return redirect(url_for('index'))
 
-    return render_template('edit_patient.html', patient=patient)
+    conn = get_db_connection()
+    patient = conn.execute('SELECT * FROM patients WHERE id = ?', (id,)).fetchone()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        age = request.form['age']
+        phone = request.form['phone']
+        conn.execute('UPDATE patients SET name = ?, age = ?, phone = ? WHERE id = ?',
+                     (name, age, phone, id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('patient_dashboard'))
+    
+    return render_template('index.html', patient=patient)
 
 if __name__ == '__main__':
     app.run(debug=True)
