@@ -1,22 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Edit Patient</title>
+    <title>Edit Patient Details</title>
 </head>
 <body>
-  <h2>Edit Patient: {{ patient.name }}</h2>
-  <form method="POST" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    {{ form.name.label }} {{ form.name() }}<br>
-    {{ form.age.label }} {{ form.age() }}<br>
-    {{ form.code_number.label }} {{ form.code_number() }}<br>
-    {{ form.image.label }} {{ form.image() }}<br>
-    {{ form.submit() }}
-  </form>
-  {% if patient.image_filename %}
-    <p>Current Image:</p>
-    <img src="{{ url_for('static', filename='uploads/' + patient.image_filename) }}" width="100">
-  {% endif %}
-  <br><a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    <h2>Edit Patient Details</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color: green;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label>Patient Name:</label>
+        <input type="text" name="name" value="{{ patient[1] }}" required><br>
+
+        <label>Age:</label>
+        <input type="number" name="age" value="{{ patient[2] }}" required><br>
+
+        <label>Phone Number:</label>
+        <input type="tel" name="phone" value="{{ patient[3] }}" required><br>
+
+        <input type="submit" value="Update">
+    </form>
+    <br>
+    <a href="/patients">Back to Patients List</a>
 </body>
 </html>
