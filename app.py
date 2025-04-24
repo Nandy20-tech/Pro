@@ -10,7 +10,6 @@ UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# Helpers
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -19,17 +18,15 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# Home Page
 @app.route('/')
 def home():
     return render_template('welcome.html')
 
-# Register User
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['Nandhith']
-        password = request.form['Nandhu@20']
+        username = request.form['username']   # Correct field name
+        password = request.form['password']   # Correct field name
         conn = get_db_connection()
         try:
             conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
@@ -41,7 +38,6 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html')
 
-# Login User
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -57,13 +53,11 @@ def login():
             return "Invalid login"
     return render_template('login.html')
 
-# Logout
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     return redirect(url_for('home'))
 
-# Dashboard (View All Patients)
 @app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
@@ -73,7 +67,6 @@ def dashboard():
     conn.close()
     return render_template('dashboard.html', patients=patients)
 
-# Add Patient
 @app.route('/add_patient', methods=['GET', 'POST'])
 def add_patient():
     if 'username' not in session:
@@ -99,7 +92,6 @@ def add_patient():
 
     return render_template('add_patient.html')
 
-# Edit Patient
 @app.route('/edit_patient/<int:id>', methods=['GET', 'POST'])
 def edit_patient(id):
     if 'username' not in session:
@@ -120,7 +112,6 @@ def edit_patient(id):
 
     return render_template('edit_patient.html', patient=patient)
 
-# View Individual Patient
 @app.route('/view_patient/<int:id>')
 def view_patient(id):
     if 'username' not in session:
@@ -131,12 +122,10 @@ def view_patient(id):
     conn.close()
     return render_template('view_patient.html', patient=patient)
 
-# Patient Entry (alternate view)
 @app.route('/patient_entry')
 def patient_entry():
     return render_template('patient_entry.html')
 
-# Start App
 if __name__ == '__main__':
     if not os.path.exists('data'):
         os.makedirs('data')
