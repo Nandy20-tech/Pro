@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Data Entry</title>
+</head>
+<body>
+    <h2>Patient Data Entry</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color: green;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="/submit_patient" method="POST" enctype="multipart/form-data">
+        <label>Patient Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label>Patient ID:</label>
+        <input type="text" name="patient_id" required><br>
+
+        <label>Age:</label>
+        <input type="number" name="age" required><br>
+
+        <label>Phone Number:</label>
+        <input type="tel" name="phone" required><br>
+
+        <label>Upload Image:</label>
+        <input type="file" name="image"><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <br>
+    <a href="/patients">View All Patients</a>
+</body>
+</html>
