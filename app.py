@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 # Config
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'Nandhu@20'
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -28,8 +28,8 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['Nandhith']
+        password = request.form['Nandhu@20']
         conn = get_db_connection()
         try:
             conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
