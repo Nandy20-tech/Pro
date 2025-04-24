@@ -3,7 +3,9 @@ import os
 import csv
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'Nandhu@20'
+
+users = {'Nandhitha': 'Nandhu@20'}
 
 DATA_FILE = 'patients.csv'
 UPLOAD_FOLDER = 'patients'
@@ -19,13 +21,36 @@ def initialize_csv():
 initialize_csv()
 
 @app.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        passkey = request.form.get('passkey')
-        if passkey == 'admin123':
-            session['authenticated'] = True
-            return redirect(url_for('dashboard'))
+
+def index():
     return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+
+def login():
+    username = request.form['username']
+    password = request.form['password']
+
+    if username in users and users[username] == password:
+        session['username'] = username
+        flash('Login successful!', 'success')
+        return redirect(url_for('dashboard'))  # or any other page after login
+    else:
+        flash('Invalid credentials!', 'danger')
+        return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        flash('Please login first.', 'warning')
+        return redirect(url_for('index'))
+    return render_template('dashboard.html', username=session['username'])
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    flash('Logged out successfully!', 'info')
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
