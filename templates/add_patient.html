@@ -13,6 +13,7 @@
     {{ form.image.label }} {{ form.image() }}<br>
     {{ form.submit() }}
   </form>
-  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+action="{{ url_for('submit_patient') }}" method="post" enctype="multipart/form-data">
+
 </body>
 </html>
