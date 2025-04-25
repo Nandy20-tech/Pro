@@ -2,13 +2,13 @@
 <html>
 <head><title>Edit Patient</title></head>
 <body>
-    <h2>Edit Patient Details</h2>
-    <form method="post">
-        Name: <input type="text" name="name" value="{{ patient[1] }}"><br>
-        Age: <input type="number" name="age" value="{{ patient[2] }}"><br>
-        Phone: <input type="text" name="phone" value="{{ patient[3] }}"><br>
+    <h2>Edit Patient</h2>
+    <form method="POST">
+        Name: <input type="text" name="name" value="{{ patient['name'] }}"><br>
+        Age: <input type="number" name="age" value="{{ patient['age'] }}"><br>
+        Phone: <input type="text" name="phone" value="{{ patient['phone'] }}"><br>
         <input type="submit" value="Update">
     </form>
-    <a href="{{ url_for('view_patients') }}">Back to Patients</a>
 </body>
 </html>
+
