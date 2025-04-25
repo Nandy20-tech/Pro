@@ -2,11 +2,30 @@
 <html>
 <head><title>Dashboard</title></head>
 <body>
-    <h2>Dashboard</h2>
-    <ul>
-        <li><a href="{{ url_for('add_patient') }}">Add New Patient</a></li>
-        <li><a href="{{ url_for('dashboard') }}">View Patients</a></li>
-        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
+    <h2>Patient Dashboard</h2>
+    <a href="{{ url_for('add_patient') }}">Add Patient</a> |
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <table border="1">
+        <tr><th>Name</th><th>Age</th><th>Phone</th><th>Image</th><th>Actions</th></tr>
+        {% for p in patients %}
+        <tr>
+            <td>{{ p['name'] }}</td>
+            <td>{{ p['age'] }}</td>
+            <td>{{ p['phone'] }}</td>
+            <td>
+                {% if p['image_path'] %}
+                    <img src="{{ '/' + p['image_path'] }}" width="50">
+                {% else %}
+                    No Image
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('edit_patient', id=p['id']) }}">Edit</a> |
+                <a href="{{ url_for('view_patient', id=p['id']) }}">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
+
