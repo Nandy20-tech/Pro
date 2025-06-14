@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head><title>Dashboard</title></head>
+<head><title>Dashboard</title>
+<style>
+body { font-family: Arial; background-color: #f0f4f8; padding: 20px; }
+h2 { color: #333; }
+a { color: #007bff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 0 10px #ccc; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+</style>
+</head>
 <body>
-    <h2>Patient Dashboard</h2>
-    <a href="{{ url_for('add_patient') }}">Add Patient</a> |
-    <a href="{{ url_for('logout') }}">Logout</a>
-    <table border="1">
-        <tr><th>Name</th><th>Age</th><th>Phone</th><th>Image</th><th>Actions</th></tr>
-        {% for p in patients %}
-        <tr>
-            <td>{{ p['name'] }}</td>
-            <td>{{ p['age'] }}</td>
-            <td>{{ p['phone'] }}</td>
-            <td>
-                {% if p['image_path'] %}
-                    <img src="{{ '/' + p['image_path'] }}" width="50">
-                {% else %}
-                    No Image
-                {% endif %}
-            </td>
-            <td>
-                <a href="{{ url_for('edit_patient', id=p['id']) }}">Edit</a> |
-                <a href="{{ url_for('view_patient', id=p['id']) }}">View</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<h2>Dashboard</h2>
+<ul>
+  <li><a href="{{ url_for('add_patient') }}">Add New Patient</a></li>
+  <li><a href="{{ url_for('dashboard') }}">View Patients</a></li>
+  <li><a href="{{ url_for('logout') }}">Logout</a></li>
+</ul>
+<table>
+<tr><th>Name</th><th>Age</th><th>Phone</th><th>Image</th><th>Action</th></tr>
+{% for patient in patients %}
+<tr>
+  <td>{{ patient['name'] }}</td>
+  <td>{{ patient['age'] }}</td>
+  <td>{{ patient['phone'] }}</td>
+  <td>
+    {% if patient['image_path'] %}
+    <img src="{{ url_for('static', filename=patient['image_path'].split('static/', 1)[-1]) }}" width="50">
+    {% else %}
+    No Image
+    {% endif %}
+  </td>
+  <td>
+    <a href="{{ url_for('edit_patient', id=patient['id']) }}">Edit</a> |
+    <a href="{{ url_for('download_pdf', id=patient['id']) }}">Download PDF</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
 </body>
 </html>
-
