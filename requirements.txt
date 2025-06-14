@@ -5,3 +5,7 @@ flask_login
 gunicorn
 wtforms
 werkzeug
+fpdf
+pillow
+pyngrok
+reportlab
