@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head><title>View Patient</title></head>
+<head><title>View Patient</title>
+<style>
+body { font-family: Arial; background-color: #f0f4f8; padding: 20px; }
+h2 { color: #333; }
+p { margin: 10px 0; }
+img { border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+</style>
+</head>
 <body>
-    <h2>Patient Details</h2>
-    <p>Name: {{ patient['name'] }}</p>
-    <p>Age: {{ patient['age'] }}</p>
-    <p>Phone: {{ patient['phone'] }}</p>
-    {% if patient['image_path'] %}
-        <img src="{{ '/' + patient['image_path'] }}" width="100">
-    {% endif %}
+<h2>{{ patient['name'] }}</h2>
+<p>Age: {{ patient['age'] }}</p>
+<p>Phone: {{ patient['phone'] }}</p>
+{% if patient['image_path'] %}
+<img src="{{ url_for('static', filename=patient['image_path'].split('static/', 1)[-1]) }}" width="150">
+{% endif %}
 </body>
 </html>
