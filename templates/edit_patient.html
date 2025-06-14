@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head><title>Edit Patient</title></head>
+<head><title>Edit Patient</title>
+<style>
+body { font-family: Arial; background-color: #f0f4f8; padding: 20px; }
+form { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; width: 300px; }
+input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+input[type=submit] { background: #ffc107; color: white; border: none; cursor: pointer; }
+input[type=submit]:hover { background: #e0a800; }
+h2 { color: #333; }
+</style>
+</head>
 <body>
-    <h2>Edit Patient</h2>
-    <form method="POST">
-        Name: <input type="text" name="name" value="{{ patient['name'] }}"><br>
-        Age: <input type="number" name="age" value="{{ patient['age'] }}"><br>
-        Phone: <input type="text" name="phone" value="{{ patient['phone'] }}"><br>
-        <input type="submit" value="Update">
-    </form>
+<h2>Edit Patient</h2>
+<form method="post">
+  Name: <input type="text" name="name" value="{{ patient['name'] }}"><br>
+  Age: <input type="number" name="age" value="{{ patient['age'] }}"><br>
+  Phone: <input type="text" name="phone" value="{{ patient['phone'] }}"><br>
+  <input type="submit" value="Update">
+</form>
 </body>
 </html>
-
