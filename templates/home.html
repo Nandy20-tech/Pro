@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head><title>Home</title></head>
+<head><title>Home</title>
+<style>
+body { font-family: Arial; background-color: #f0f4f8; padding: 20px; }
+a { color: #007bff; text-decoration: none; margin-right: 10px; }
+a:hover { text-decoration: underline; }
+h2 { color: #333; }
+</style>
+</head>
 <body>
-    <h2>Welcome to Patient Management System</h2>
-    <a href="{{ url_for('login') }}">Login</a> |
-    <a href="{{ url_for('register') }}">Register</a>
+<h2>Welcome to Patient Database Management System</h2>
+<a href="{{ url_for('login') }}">Login</a> |
+<a href="{{ url_for('register') }}">Register</a>
 </body>
 </html>
