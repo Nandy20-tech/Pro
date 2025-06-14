@@ -157,4 +157,4 @@ def download_pdf(id):
         return "Patient not found"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
